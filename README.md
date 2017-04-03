@@ -1,1 +1,3 @@
 # Udacity
+
+This repo is going to be used to house my Udacity projects. Udacity is a site for self-learning new technologies, and their nanodegree programs are tracks that combine courses with projects that are graded by Udacity staff for the relevant field. I am currently enrolled in the Data Analyst nanodegree program, and might possibly try to do some of the other courses on my own in the future. 
