@@ -1,0 +1,146 @@
+<!-- Patrick Coakley - Udacity Project 6 - Data Visualization -->
+<html>
+<!-- Include D3 first as Dimple is a superset and requires it to load  -->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="http://dimplejs.org/dist/dimple.v2.3.0.min.js"></script>
+<!-- Add some styling -->
+<style>
+    body {
+        background-color: #fffcf3;
+        color: #29353F;
+    }
+    #main-title {
+        text-align: center;
+        font-family: sans-serif;
+    }
+    .context { font-family: sans-serif; }
+
+    #pretext {
+        text-align: center;
+        margin: 1% 15% 5% 15%;
+        padding: 3% 5% 1% 5%;
+    }
+    #pretext p { font-size: 18px; }
+    #chartContainer { text-align: center; }
+    #ringChart {padding-bottom: 5px;}
+    /* 		Hides the X-axis ticks and labels */
+    g.dimple-axis.dimple-axis-x g.tick {
+        visibility:hidden;
+    }
+</style>
+<body>
+<!-- 	Create a div for spacing and stlying -->
+<div id="pretext">
+    <h1 id="main-title"> Udacity Project 6 -  Data Visualization</h1><br>
+    <p class="context">The following visualization was created to show that
+        there is a relationship between the handedness of baseball players and
+        their home run performance. The data set from which this visualization
+        was created from contains 1,157 baseball players' statistics,
+        including weight, height, handedness, and home runs. The visualization 
+        shows that left-handed players were outperforming both right-handed and 
+        ambidextrous players by rate of home runs during the period in which 
+        this data was being collected.</p>
+</div>
+<!-- Entry point for the visualization -->
+<div id="chartContainer">
+    <script type="text/javascript">
+        // Create main container for visualization
+        var svg = dimple.newSvg("#chartContainer", 1100, 900);
+        // Load the data from the CSV
+        d3.csv("baseball_data.csv", function (data) {
+            var myChart = new dimple.chart(svg, data);
+            myChart.setBounds(100, 50, 600, 600)
+            // Declare both axes
+            var yAxis = myChart.addMeasureAxis("y", "Home Runs");
+            var xAxis = myChart.addCategoryAxis("x", "Handedness");
+            // Add titles to each axis
+            xAxis.title = "";
+            yAxis.title = "Home Runs (Average)"
+            // Change number of ticks
+            yAxis.ticks = 10;
+            xAxis.ticks = 3;
+            xAxis.tickFormat = "1f";
+            // Show gridlines
+            xAxis.showGridlines = false;
+            yAxis.showGridlines = false;
+            // Set the colors for handedness
+            myChart.defaultColors = [
+                new dimple.color("#FD7261"), // Red - Right handedness
+                new dimple.color("#7EB4FF"), // Blue - Left handedness
+                new dimple.color("#A896CE")]; // Purple - Both handedness
+            // Create the series by handedness
+            var mySeries = myChart.addSeries("Handedness", dimple.plot.bar);
+            // Average the data
+            mySeries.aggregate = dimple.aggregateMethod.avg;
+            // Define dimensions to make it easier to line up the ring charts
+            var radius = 200;
+            var ringXDist = 680;
+            var ringYDist = 75;
+            // Do the same for labels
+            var labelXDist = 830;
+            var labelYDist = ringYDist;
+            //Define first ring chart
+            var ringChart = new dimple.chart(svg, data);
+            ringChart.setBounds(ringXDist, ringYDist, 300, radius)
+            ringChart.addMeasureAxis("p", "Home Runs");
+            var ring = ringChart.addSeries("Handedness", dimple.plot.pie);
+            ring.aggregate = dimple.aggregateMethod.sum;
+            ring.innerRadius = "50%";
+            ringChart.defaultColors = myChart.defaultColors;
+            // Define second ring chart
+            var ringChart2 = new dimple.chart(svg, data);
+            ringChart2.setBounds(ringXDist, ringYDist + 290, 300, radius)
+            ringChart2.addMeasureAxis("p", "Players");
+            var ring2 = ringChart2.addSeries("Handedness", dimple.plot.pie);
+            ring2.aggregate = dimple.aggregateMethod.count;
+            ring2.innerRadius = "50%";
+            ringChart2.defaultColors = myChart.defaultColors;
+            // Create a legend
+            var myLegend = myChart.addLegend(160, labelYDist - 330,
+                ringXDist + 85, 200, "right");
+            //Draw the visualizations
+            myChart.draw(800);
+            ringChart2.draw();
+            ringChart.draw();
+            // Append extra text for labels
+            svg.append("text")
+                .attr("x", 400)
+                .attr("y", 20)
+                .style("font-size", "22px")
+                .style("font-weight", "bold")
+                .style("font-family", "sans-serif")
+                .style("text-anchor", "middle")
+                .style("fill", "#29353F")
+                .text("Baseball Players' Average Home Runs By Handedness");
+            svg.append("text")
+                .attr("x", labelXDist)
+                .attr("y", labelYDist + 550)
+                .style("font-size", "13px")
+                .style("font-weight", "bold")
+                .style("font-family", "sans-serif")
+                .style("text-anchor", "middle")
+                .style("fill", "#29353F")
+                .text("Handedness");
+            svg.append("text")
+                .attr("x", labelXDist)
+                .attr("y", labelYDist - 50)
+                .style("font-size", "13px")
+                .style("font-weight", "bold")
+                .style("font-family", "sans-serif")
+                .style("text-anchor", "middle")
+                .style("fill", "#29353F")
+                .text("Total Home Runs By Handedness");
+            svg.append("text")
+                .attr("x", labelXDist)
+                .attr("y", labelYDist + 250)
+                .style("font-size", "13px")
+                .style("font-weight", "bold")
+                .style("font-family", "sans-serif")
+                .style("text-anchor", "middle")
+                .style("fill", "#29353F")
+                .text("Total Players By Handedness");
+        });
+    </script>
+</div>
+</body>
+</html>
